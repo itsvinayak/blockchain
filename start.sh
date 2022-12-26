@@ -1,0 +1,1 @@
+sudo docker build --tag blockchain .  && sudo docker run -d -p 8080:8080 blockchain 
