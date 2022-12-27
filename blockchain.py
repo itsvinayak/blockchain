@@ -22,17 +22,22 @@ class Blockchain(object):
             is_chain_valid : check if the blockchain is valid
     """
 
+
     def __init__(self) -> None:
         """
         initialize the blockchain
         """
         self.chain = []
+        # create the genesis block
         self.create_block(proof=1, previous_hash="0")
 
     def __str__(self) -> str:
         return self.chain
 
     def hash(self, block) -> str:
+        """
+        hash the block using sha256, and return the hash
+        """
         encoded_block = str(json.dumps(block, sort_keys=True)).encode('utf-8')
         hash = hashlib.sha256(encoded_block).hexdigest()
         return hash
@@ -77,6 +82,31 @@ class Blockchain(object):
         elapsed = time.time() - start_time
         print(' time take to get new_proof using pow : ', elapsed)
         return new_proof
+
+    def is_chain_valid(self, chain):
+        """
+        check if the blockchain is valid
+        """
+        if chain == [] or chain == None:
+            # if the chain is empty or None, then the chain is not passed as a parameter
+            chain = self.chain
+
+        previous_block = chain[0]
+        block_index = 1
+        while block_index < len(chain):
+            block = chain[block_index]
+            if block["previous_hash"] != self.hash(previous_block):
+                return False
+            previous_proof = previous_block["proof"]
+            proof = block["proof"]
+            hash_operation = hashlib.sha256(
+                str(proof**2 - previous_proof**2).encode()
+            ).hexdigest()
+            if hash_operation[:4] != "0000":
+                return False
+            previous_block = block
+            block_index += 1
+        return True
 
     def get_chain(self):
         return self.chain

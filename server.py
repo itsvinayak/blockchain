@@ -11,6 +11,12 @@ from blockchain import Blockchain
 
 blockchain = Blockchain()
 
+
+@app.route('/', methods=['GET'])
+def home():
+    return "<h1>Welcome to the Blockchain</h1>", 200
+
+
 @app.route('/mine_block', methods=['GET'])
 def mine_block():
     previous_block = blockchain.get_previous_block()
@@ -36,6 +42,19 @@ def get_chain():
 def get_chain_length():
     blockchain_len = blockchain.get_length()
     return jsonify(blockchain_len), 200
+
+@app.route('/is_valid', methods=['GET'])
+def is_valid():
+    is_valid = blockchain.is_chain_valid(blockchain.chain)
+    if is_valid:
+        response = {}
+        response['message'] = "Blockchain is valid"
+        return jsonify(response), 200
+    else:
+        response = {}
+        response['message'] = "Blockchain is not valid"
+        return jsonify(response), 200
+
 
 
 if __name__ == "__main__":
